@@ -1,0 +1,339 @@
+#include <iomanip> 
+#include <cstring> 
+#include <stdlib.h>
+#include <conio.h>
+#include <stdio.h> 
+#include <fstream>                  
+#include <iostream>
+
+using namespace std;
+
+struct KitapEvi
+{
+	char kitap_adi[80];
+	char kitap_turu[80];
+	char yazar_adi[5];
+	char fiyat[5];	
+};
+void KitapEkle();
+void KitapListeleme();
+void KitapArama();
+void KitapSil();
+void KitapDuzenle();
+int main(){
+	
+	char anamenu;
+	do{
+	system("cls");
+	
+	cout << "|-------Hosgeldiniz------|" << endl ;
+	cout << "|      Secim Yapiniz     |" << endl ;
+	cout << "|    1- Kitap Ekleme     |" << endl ;
+	cout << "|    2- Kitap Listeleme  |" << endl ;
+	cout << "|    3- Kitap Arama      |"<< endl;
+	cout << "|    4- Kitap Sil        |"<< endl;
+	cout << "|    5- Kitap Duzenle    |"<< endl;
+	cout << "|------------------------|" << endl ;
+    char secim;
+	cin>> secim;
+	
+	switch(secim) 
+	{
+		case '1' : 
+		{
+		KitapEkle();
+		break;	
+		}
+		case '2' : 
+		{
+		 KitapListeleme()	;
+		 break;
+		}
+		case '3' : 
+		{
+		 KitapArama()	;
+		 break;
+		}
+		case '4' : 
+		{
+		 KitapSil()	;
+		 break;
+		}
+		case '5' : 
+		{
+		 KitapDuzenle();
+		 break;
+		}
+	}
+	
+	cout << "Anamenuye Donmek icin: a basin cikmak icin: c" <<endl ; 
+	anamenu=getche();
+	
+    }while(anamenu=='a');
+     
+
+return 0;
+}
+
+KitapEvi kitap;
+
+void KitapEkle()
+{
+	ofstream yaz("kitap.dat",ios::binary |ios::app);
+	char secim;
+	int adet=0;
+	
+	do{
+	cout << "Kitap adi giriniz" << endl;
+	cin>> kitap.kitap_adi;
+	cout << "Kitap turu giriniz" << endl;
+	cin>> kitap.kitap_turu;
+	cout << "Yazar adi  giriniz" << endl;
+	cin>> kitap.yazar_adi;
+	cout << "Kitap fiyati giriniz" << endl;
+	cin>>kitap.fiyat;
+	cout << endl;
+	yaz.write((char*)&kitap, sizeof(kitap));	
+	adet++;	
+	cout << "Baska kitap Eklemek Istermisin (E/H)" << endl;
+	secim=getche();
+	cout << endl;
+	}while(secim=='e' || secim=='E');
+	
+	cout << adet << " adet kitap Ekledi.." << endl;
+	
+	yaz.close();
+	
+	
+}
+
+void KitapListeleme()
+{
+	
+	ifstream oku("kitap.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+	int kitaps=oku.tellg()/sizeof(kitap);
+	cout << "Toplam kitap Kayit Sayisi:"<< kitaps << endl;
+	
+	if(kitaps>0)
+	{
+		for(int i=0; i<kitaps;i++)
+		{
+			oku.seekg(i*sizeof(kitap));
+			oku.read((char*)&kitap, sizeof(kitap));	
+		
+			cout << i+1 << ". Kitabin Bilgileri"<< endl;
+			cout << "Kitap Adi: "<< kitap.kitap_adi <<endl ;
+			cout << "Kitap turu: "<< kitap.kitap_turu <<endl ;
+			cout << "Kitap yazari: "<< kitap.yazar_adi <<endl ;
+			cout << "Kitap fiyati:" <<kitap.fiyat<<endl ;
+			
+		}
+		
+		
+	}
+	else
+	cout << "Kayit Bulunamadi..." << endl;
+
+	oku.close();
+}
+void KitapArama()
+{
+	
+	ifstream oku("kitap.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+	int kitaps=oku.tellg()/sizeof(kitap);
+
+cout <<"Aranan kitap adi giriniz"<< endl;
+char kitap_adi[80];
+cin>> kitap_adi;
+ 		
+	if(kitaps>0)
+	{
+		for(int i=0; i<kitaps;i++)
+		{
+			
+			oku.seekg(i*sizeof(kitap));
+			oku.read((char*)&kitap, sizeof(kitap));
+			
+			if(strcmp(kitap.kitap_adi,kitap_adi)==0)
+			{
+			cout <<  "Bulunan kitabin Bilgileri"<< endl;
+			cout << "kitap Adi: "<<kitap.kitap_adi <<endl ;
+			cout << "kitap turu: "<<kitap.kitap_turu <<endl ;
+			cout << "kitap yazarı: "<< kitap.yazar_adi<<endl ;
+			cout << "kitap fiyati: " <<kitap.fiyat<<endl ;
+		    }
+		}
+		
+		
+	}
+	else
+	cout << "Kayit Bulunamadi..." << endl;
+
+	oku.close();
+}
+
+void KitapSil()
+{
+	 char kitap_adi[80];
+     char secim= ' ';
+     bool var=false;
+     
+    ifstream oku("kitap.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+
+	int kitapsayisi=oku.tellg()/sizeof(kitap);
+	
+     cout<<"Kaydini Sileceginiz kitap adi giriniz : ";
+     cin>>kitap_adi;
+
+     for(int i=0;i<kitapsayisi;i++)
+     {
+            oku.seekg(i*sizeof(kitap));
+			oku.read((char*)&kitap, sizeof(kitap));
+			
+     if(strcmp(kitap.kitap_adi,kitap_adi)==0)
+       {
+                 cout<<endl;
+                 cout<<"Kitabin";
+                 cout<<"\nAdi : "<<kitap.kitap_adi<<endl;
+                  cout<<"\nTuru : "<<kitap.kitap_turu<<endl;
+                   cout<<"\nYazari : "<<kitap.yazar_adi<<endl;
+                 cout<<"\nFiyati: "<<kitap.fiyat<<endl;
+                
+         	 				  
+                cout<<"\n\nSilmek Istediginiz kitap Bu Mu? [E/H] : ";
+                 secim=getche();
+            if(secim == 'H' || secim == 'h')
+              {      
+			    KitapEvi y_kitap;
+                ofstream y_dosya("Yedek.dat",ios::app|ios::binary);
+                
+                strcpy(y_kitap.kitap_adi,kitap.kitap_adi);
+                strcpy(y_kitap.kitap_turu,kitap.kitap_turu);
+                strcpy(y_kitap.yazar_adi,kitap.yazar_adi);
+                strcpy(kitap.fiyat,y_kitap.fiyat);
+                        
+                y_dosya.write((char*)&kitap, sizeof(kitap));
+                y_dosya.close();
+              }
+            if(secim=='e'||secim=='E')
+              {
+   			   	var=true;
+  		 	  }
+        }
+             else
+             {
+              KitapEvi y_kitap;
+              ofstream y_dosya("Yedek.dat",ios::app|ios::binary);
+              
+              strcpy(y_kitap.kitap_adi,kitap.kitap_adi);
+              strcpy(y_kitap.kitap_turu,kitap.kitap_turu);
+              strcpy(y_kitap.yazar_adi,kitap.yazar_adi);
+              strcpy(y_kitap.fiyat,kitap.fiyat);
+                       
+              y_dosya.write((char*)&kitap, sizeof(kitap));
+              y_dosya.close();
+             }
+     }
+    oku.close();
+    if(var)
+    {
+               remove("kitap.dat");
+               rename("Yedek.dat","kitap.dat");
+               cout<<"\n Kitap Silindi"<<endl;
+    }
+    else
+    {
+               remove("Yedek.dat");
+               cout<<"\n Kitap Bulunamadi"<<endl;                  
+    }
+	
+	
+}
+
+void KitapDuzenle()
+{
+	 char kitap_adi[80];
+     char secim= ' ';
+     bool var=false;
+     
+    ifstream oku("kitap.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+
+	int kitapsayisi=oku.tellg()/sizeof(kitap);
+		
+     cout<<"Kaydini Duzelteceginiz Kitabi Giriniz : ";
+     cin>>kitap_adi;
+
+     for(int i=0;i<kitapsayisi;i++)
+     {
+            oku.seekg(i*sizeof(kitap));
+			oku.read((char*)&kitap, sizeof(kitap));
+			
+     		if(strcmp(kitap.kitap_adi,kitap_adi)==0)
+     		  {
+     		  	
+                 cout<<endl;
+                 cout<<"Kitabin";
+                 cout<<"\nAdi : "<<kitap.kitap_adi;
+                 cout<<"\nTuru : "<<kitap.kitap_turu<<endl;
+                 cout<<"\nYazari : "<<kitap.yazar_adi;
+                 cout<<"\nFiyati: "<<kitap.fiyat;
+               
+                 
+                  cout<<"\nDuzeltmek istediginiz kitap bu mu? [E/H] : ";
+                  secim=getche();
+                  if(secim == 'E' || secim == 'e')
+                  {
+                     	var=true;
+                        ofstream dosya("Yedek.dat",ios::app|ios::binary);
+                        cout << "\nKitap adi giriniz:" << endl;
+						cin>> kitap.kitap_adi;
+						cout << "Kitap turu giriniz:" << endl;
+						cin>> kitap.kitap_turu;
+						cout << "Kitap yazari giriniz:" << endl;
+						cin>> kitap.yazar_adi;
+						cout << "Kitap fiyati giriniz:" << endl;
+						cin>> kitap.fiyat;
+						cout << endl;
+		  
+                        dosya.write((char*)&kitap, sizeof(kitap));
+                        dosya.close();
+            	  }
+            	 else
+                 	{
+                         KitapEvi y_kitap;
+                         ofstream y_dosya;
+                         y_dosya.open("Yedek.dat",ios::app|ios::binary);
+                         
+                    	 strcpy(y_kitap.kitap_adi,kitap.kitap_adi);
+            			 strcpy(y_kitap.kitap_turu,kitap.kitap_turu);
+            			 strcpy(y_kitap.yazar_adi,kitap.yazar_adi);
+             			 strcpy(y_kitap.fiyat,kitap.fiyat);
+                         
+             			 y_dosya.write((char*)&y_kitap, sizeof(y_kitap));
+                         y_dosya.close();
+                   }
+     }
+ }
+    oku.close();
+    if(var)
+    {
+               remove("kitap.dat");
+               rename("Yedek.dat","kitap.dat");
+               cout<<"\nKitap Duzeltildi."<<endl;
+    }
+    else
+    {
+               remove("Yedek.dat");
+               cout<<"\nKitap Bulunamadi"<<endl;                  
+    }
+
+}
+
